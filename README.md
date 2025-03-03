@@ -1,39 +1,30 @@
-# Backend para e-commerce de Bicicletas Trek 🚴‍♂️
+# Trek Bikes E-Commerce
 
-Este proyecto es un backend sencillo para gestionar un e-commerce de bicicletas Trek. Aquí puedes crear, leer, actualizar y eliminar productos de forma eficiente. 
+Hey there! Welcome to my Trek Bikes E-Commerce project. This full-stack application manages an online store for Trek bikes with a REST API that supports complete CRUD operations for products, carts, and users using MongoDB via Mongoose (with local files as backup). All endpoints and views are in English.
 
-## ¿Qué incluye? 
-- **Gestión de productos**: Puedes agregar, ver, actualizar y eliminar productos.
-- **Persistencia de datos**: Toda la información de los productos se guarda en un archivo (`products.json`).
-- **Validación y manejo de errores**: Evita problemas con rutas no válidas o datos incompletos.
-- **Registro de solicitudes**: Usa `morgan` para mantener un registro de las peticiones al servidor.
-- **Diseño simple y claro**: Ideal para empezar con proyectos backend.
+## What This Project Does
 
-# Bicis Trek - E-Commerce 🚴‍♂️
+- **Dual Persistence:**  
+  Data is stored in MongoDB (primary) and backed up in JSON files.
+- **Product Management:**  
+  Create, read (with filtering and pagination), update, and delete products. Each product has a title, category, thumbnails, price, stock, and description.
+- **User Management:**  
+  Users have a MongoDB-generated ID, a default photo URL, email (required), password (required), and a role (default "USER").
+- **Cart Management:**  
+  Each cart is linked to a user and contains an array of products (each with a product ID and quantity). It handles adding items, updating quantities (ensuring you don’t exceed available stock), and removing items.
+- **Checkout Process:**  
+  A checkout page collects shipping information (address and phone) and creates an order in the database.
+- **API Endpoints:**  
+  Fully RESTful endpoints for products, carts, users, and orders (checkout) with error handling and logging (using Morgan).
+- **Views:**  
+  - **Landing Page (/):** Navigation, logo, paginated product catalog with category filter.
+  - **Product Detail (/products/:pid):** Product information with an "Add to Cart" button.
+  - **Real-Time Products (/products/real):** Create products in real time.
+  - **User Registration (/users/register) & Login (/users/login):** Simple forms (non-functional).
+  - **User Profile (/users/:uid):** Displays user details.
+  - **Cart Page (/carts/:uid):** Shows the cart with options to update quantities, remove items, and navigate to checkout.
+  - **Checkout (/checkout):** Collects shipping information and submits the order.
+- **Environment Variables:**  
+  The MongoDB connection is configured via a `.env` file.
 
-¡Hola! 😊 Bienvenido al proyecto de **Bicis Trek**, mi e-commerce para vender bicicletas Trek. Este es un trabajo sencillo que incluye tanto un backend como un frontend básico para listar y mostrar productos.
-
----
-
-## ¿Qué incluye este proyecto? 🛠️
-
-### Frontend:
-- Una página web con el título **"Bicis Trek"**.  
-- Dos botones principales:
-  - **Inicio** (te lleva a la página principal).  
-  - **Carrito** (funciona como enlace al carrito).  
-- Un catálogo con **tres bicicletas** bien organizadas. Cada bici muestra:  
-  - Su imagen.
-  - Nombre.
-  - Precio.
-  - Stock disponible.  
-
-### Backend:
-- Una **API REST** que maneja los productos. Puedes:
-  - Crear nuevos productos.
-  - Leer los productos existentes.
-  - Actualizar productos.
-  - Eliminar productos.
-- Los datos se guardan en un archivo JSON llamado `products.json`.
-- Manejo de rutas inexistentes para evitar errores confusos.
 

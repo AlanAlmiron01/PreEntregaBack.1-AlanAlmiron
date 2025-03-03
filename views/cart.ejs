@@ -15,27 +15,27 @@
   </header>
   <main>
     <div id="cartItems">
-      <!-- Los elementos del carrito se cargarán aquí -->
+      <!-- Cart items will be loaded here via client-side JS -->
+    </div>
+    <div>
+      <button id="checkoutBtn">Proceed to Checkout</button>
+      <button id="cancelBtn">Cancel Purchase</button>
     </div>
   </main>
   <script>
     async function loadCart() {
-      const cartId = localStorage.getItem('cartId');
-      const cartItemsDiv = document.getElementById('cartItems');
-      if (!cartId) {
-        cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
-        return;
-      }
-      const res = await fetch(`/api/carts/${cartId}`);
+      const userId = '609e12672f8fb814c89e5f00'; // Hardcoded for demo
+      const res = await fetch(`/api/carts?user_id=${userId}`);
       const data = await res.json();
+      const cartItemsDiv = document.getElementById('cartItems');
       if (data.response && data.response.products.length > 0) {
         cartItemsDiv.innerHTML = data.response.products.map(item => `
           <div class="product-card">
             <p>Product ID: ${item.productId}</p>
             <p>Quantity: ${item.quantity}</p>
-            <button onclick="updateQuantity('${cartId}', '${item.productId}', ${item.quantity + 1})">+</button>
-            <button onclick="updateQuantity('${cartId}', '${item.productId}', ${item.quantity - 1})">-</button>
-            <button onclick="removeProduct('${cartId}', '${item.productId}')">Remove</button>
+            <input type="number" value="${item.quantity}" min="1" id="qty-${item.productId}">
+            <button onclick="updateQuantity('${data.response._id}', '${item.productId}', document.getElementById('qty-${item.productId}').value)">Update Quantity</button>
+            <button onclick="removeProduct('${data.response._id}', '${item.productId}')">Remove</button>
           </div>
         `).join('');
       } else {
@@ -47,7 +47,7 @@
       const res = await fetch(`/api/carts/${cartId}/product/${productId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity })
+        body: JSON.stringify({ quantity: parseInt(quantity) })
       });
       if (!res.ok) {
         const err = await res.json();
@@ -66,6 +66,21 @@
       }
       loadCart();
     }
+    
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      window.location.href = '/checkout';
+    });
+    
+    document.getElementById('cancelBtn').addEventListener('click', async () => {
+      const cartId = localStorage.getItem('cartId');
+      if (!cartId) return;
+      const res = await fetch(`/api/carts/${cartId}`, { method: 'DELETE' });
+      if (res.ok) {
+        localStorage.removeItem('cartId');
+        alert('Purchase canceled.');
+        loadCart();
+      }
+    });
     
     loadCart();
   </script>

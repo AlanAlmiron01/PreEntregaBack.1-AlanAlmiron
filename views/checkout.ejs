@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>Checkout</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/carts/609e12672f8fb814c89e5f00">Cart</a>
+    </nav>
+  </header>
+  <main>
+    <form id="checkoutForm">
+      <h2>Shipping Information</h2>
+      <label for="address">Address:</label>
+      <input type="text" name="address" id="address" required>
+      
+      <label for="phone">Phone:</label>
+      <input type="text" name="phone" id="phone" required>
+      
+      <button type="submit">Submit Order</button>
+    </form>
+  </main>
+  <script>
+    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const address = document.getElementById('address').value;
+      const phone = document.getElementById('phone').value;
+      const userId = '609e12672f8fb814c89e5f00'; // Hardcoded demo user id
+      
+      // Retrieve cart from API using user_id
+      const resCart = await fetch(`/api/carts?user_id=${userId}`);
+      const cartData = await resCart.json();
+      if (!cartData.response) {
+        alert('Your cart is empty.');
+        return;
+      }
+      
+      const orderData = {
+        user_id: userId,
+        products: cartData.response.products,
+        shippingInfo: { address, phone }
+      };
+      
+      const resOrder = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      
+      if (resOrder.ok) {
+        alert('Order placed successfully!');
+        localStorage.removeItem('cartId');
+        window.location.href = '/';
+      } else {
+        const errorData = await resOrder.json();
+        alert('Error: ' + errorData.error);
+      }
+    });
+  </script>
+</body>
+</html>

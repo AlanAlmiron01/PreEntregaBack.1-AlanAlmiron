@@ -1,56 +1,25 @@
-import fs from 'fs/promises';
-import path from 'path';
-import generateId from '../utils/generateId.js';
-
-const __dirname = path.resolve();
-const filePath = path.join(__dirname, 'data', 'users.json');
+import User from '../models/user.model.js';
 
 class UserManager {
-  async read() {
-    try {
-      const data = await fs.readFile(filePath, 'utf-8');
-      return JSON.parse(data);
-    } catch (error) {
-      return [];
-    }
-  }
-
-  async write(data) {
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
-  }
-
-  async create(user) {
-    const users = await this.read();
-    const newUser = {
-      _id: generateId(),
-      name: user.name,
-      email: user.email
-    };
-    users.push(newUser);
-    await this.write(users);
+  async create(data) {
+    const newUser = await User.create(data);
     return newUser;
   }
 
+  async read(filter = {}) {
+    return await User.find(filter);
+  }
+
   async readOne(id) {
-    const users = await this.read();
-    return users.find(u => u._id === id);
+    return await User.findById(id);
   }
 
-  async update(id, data) {
-    const users = await this.read();
-    const index = users.findIndex(u => u._id === id);
-    if (index === -1) return null;
-    users[index] = { ...users[index], ...data };
-    await this.write(users);
-    return users[index];
+  async updateOne(id, data) {
+    return await User.findByIdAndUpdate(id, data, { new: true });
   }
 
-  async destroy(id) {
-    const users = await this.read();
-    const filtered = users.filter(u => u._id !== id);
-    if (users.length === filtered.length) return null;
-    await this.write(filtered);
-    return id;
+  async destroyOne(id) {
+    return await User.findByIdAndDelete(id);
   }
 }
 

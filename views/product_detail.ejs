@@ -11,7 +11,7 @@
     <nav>
       <a href="/">Home</a>
       <a href="/products/real">Products</a>
-      <a href="/cart">Cart</a>
+      <a href="/carts/609e12672f8fb814c89e5f00">Cart</a>
     </nav>
   </header>
   <main>
@@ -28,31 +28,35 @@
     </div>
   </main>
   <script>
-    document.getElementById('addToCartForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const quantity = parseInt(e.target.quantity.value);
-      let cartId = localStorage.getItem('cartId');
-      if (!cartId) {
-        const res = await fetch('/api/carts', {
+    document.addEventListener('DOMContentLoaded', function() {
+      const addToCartForm = document.getElementById('addToCartForm');
+      if (!addToCartForm) return;
+      addToCartForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const quantity = parseInt(e.target.quantity.value);
+        let cartId = localStorage.getItem('cartId');
+        if (!cartId || cartId.length !== 24) {
+          const res = await fetch('/api/carts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ products: [], user_id: '609e12672f8fb814c89e5f00' })
+          });
+          const data = await res.json();
+          cartId = data.response._id || data.response;
+          localStorage.setItem('cartId', cartId);
+        }
+        const res = await fetch(`/api/carts/${cartId}/product/<%= product._id %>`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ products: [], user_id: 'guest' })
+          body: JSON.stringify({ quantity })
         });
-        const data = await res.json();
-        cartId = data.response._id || data.response;
-        localStorage.setItem('cartId', cartId);
-      }
-      const res = await fetch(`/api/carts/${cartId}/product/<%= product._id %>`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity })
+        if (res.ok) {
+          alert('Product added to cart');
+        } else {
+          const errorData = await res.json();
+          alert('Error: ' + errorData.error);
+        }
       });
-      if (res.ok) {
-        alert('Product added to cart');
-      } else {
-        const errorData = await res.json();
-        alert('Error: ' + errorData.error);
-      }
     });
   </script>
 </body>

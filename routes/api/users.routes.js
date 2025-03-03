@@ -23,32 +23,4 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/:uid', async (req, res, next) => {
-  try {
-    const user = await userManager.readOne(req.params.uid);
-    if (!user) return res.status(404).json({ statusCode: 404, error: 'User not found' });
-    res.json({ statusCode: 200, response: user });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.put('/:uid', validateUser, async (req, res, next) => {
-  try {
-    const updatedUser = await userManager.update(req.params.uid, req.body);
-    res.json({ statusCode: 200, response: updatedUser });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.delete('/:uid', async (req, res, next) => {
-  try {
-    const deletedUser = await userManager.destroy(req.params.uid);
-    res.json({ statusCode: 200, response: deletedUser });
-  } catch (error) {
-    next(error);
-  }
-});
-
 export default router;
